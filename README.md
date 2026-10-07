@@ -72,7 +72,7 @@ PRIVATE_KEY=0x… node paidrep.mjs complete <jobId> "accepted"   # evaluator
 
 ## Web viewer
 
-**https://northstar-trustrail.github.io/paidrep/** is a read-only page served by GitHub Pages from [`docs/`](docs/). It shows the deployment, looks up escrow-backed reputation for any agentId (default: demo agent 2306), and lists recent escrow jobs, all read directly from `https://rpc.mainnet.arc.io`. To run it locally: `cd docs && python3 -m http.server 8000`, then open http://localhost:8000.
+**https://northstar-trustrail.github.io/paidrep/** is a read-only page served by GitHub Pages from the `gh-pages` branch, a mirror of [`docs/`](docs/) (`git subtree push --prefix docs origin gh-pages`). Asset paths are relative, so it works under `/paidrep/`. It shows the deployment, looks up escrow-backed reputation for any agentId (default: demo agent 2306), and lists recent escrow jobs, all read directly from `https://rpc.mainnet.arc.io`. To run it locally: `cd docs && python3 -m http.server 8000`, then open http://localhost:8000.
 
 ## Build and test
 
