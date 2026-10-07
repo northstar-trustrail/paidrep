@@ -4,6 +4,8 @@
 
 **Live viewer:** https://northstar-trustrail.github.io/paidrep/ (read-only, reads Arc mainnet directly)
 
+**Demo video (1:46):** https://northstar-trustrail.github.io/paidrep/demo.mp4 (problem, how it works, the live viewer, the escrow and settlement tx on explorer.arc.io, and a real terminal run of the CLI and test suite; also in [`docs/demo.mp4`](docs/demo.mp4))
+
 **Problem.** Agent reputation under ERC-8004 is permissionless: anyone can post feedback for any agent, so raw scores are easy to fake.
 **Fix.** PaidRep pairs an **ERC-8183 job escrow** with a hook that writes ERC-8004 feedback **only when USDC actually settles through escrow on Arc**: a completed job, or a submitted job the evaluator rejected. The hook is the sole writer for its own client address. Query the ReputationRegistry filtered by the hook address and every data point is backed by paid, evaluated work.
 

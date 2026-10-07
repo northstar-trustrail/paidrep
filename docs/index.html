@@ -10,10 +10,13 @@ input{padding:6px;width:8rem} button{padding:6px 12px} .muted{color:#666}
 </style></head><body>
 <h1><img src="./logo.png" alt="" width="48" height="48" style="vertical-align:middle;border-radius:8px"> PaidRep on Arc</h1>
 <p>An <b>ERC-8183</b> job escrow on <b>Arc mainnet</b> with a hook that writes <b>ERC-8004</b> reputation <i>only</i> when real USDC settles through escrow.
-Filter Arc's ReputationRegistry by the hook address and you get feedback that can't be faked without paying for it.</p>
+Filter Arc's ReputationRegistry by the hook address and you get feedback that can't be faked without paying for it. <a href="#demo">Watch the demo video.</a></p>
 <div class="card" id="dep">Loading deployment…</div>
 <div class="card"><b>Agent reputation</b> &nbsp; agentId <input id="aid" value=""> <button onclick="rep()">Look up</button><pre id="repout" class="muted"></pre></div>
 <div class="card"><b>Recent jobs</b><table id="jobs"><tr><th>id</th><th>status</th><th>budget</th><th>provider agent</th><th>description</th></tr></table></div>
+<div class="card" id="demo"><b>Demo video</b> <span class="muted">(1:46, captions + synthetic voice)</span>
+<video controls preload="metadata" playsinline poster="./demo-poster.jpg" src="./demo.mp4" style="width:100%;margin-top:.5rem;border-radius:6px;background:#000"></video>
+<div class="muted">Direct link: <a href="./demo.mp4">demo.mp4</a> (MP4, H.264, 1280×720)</div></div>
 <p class="muted">Read-only page. It talks straight to <code>https://rpc.mainnet.arc.io</code>. Source: <a href="https://github.com/northstar-trustrail/paidrep">github.com/northstar-trustrail/paidrep</a>.</p>
 <script type="module">
 import { createPublicClient, http, parseAbi, formatUnits } from "https://esm.sh/viem@2";
