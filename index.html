@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PaidRep on Arc: escrow-backed agent reputation</title>
+<link rel="icon" type="image/png" href="./logo.png">
+<style>
+body{font:15px/1.5 system-ui,sans-serif;max-width:860px;margin:2rem auto;padding:0 1rem;color:#111}
+code,td.mono{font-family:ui-monospace,monospace;font-size:13px} table{border-collapse:collapse;width:100%}
+td,th{border-bottom:1px solid #ddd;padding:4px 6px;text-align:left} .card{border:1px solid #ddd;border-radius:8px;padding:1rem;margin:1rem 0}
+input{padding:6px;width:8rem} button{padding:6px 12px} .muted{color:#666}
+</style></head><body>
+<h1><img src="./logo.png" alt="" width="48" height="48" style="vertical-align:middle;border-radius:8px"> PaidRep on Arc</h1>
+<p>An <b>ERC-8183</b> job escrow on <b>Arc mainnet</b> with a hook that writes <b>ERC-8004</b> reputation <i>only</i> when real USDC settles through escrow.
+Filter Arc's ReputationRegistry by the hook address and you get feedback that can't be faked without paying for it.</p>
+<div class="card" id="dep">Loading deployment…</div>
+<div class="card"><b>Agent reputation</b> &nbsp; agentId <input id="aid" value=""> <button onclick="rep()">Look up</button><pre id="repout" class="muted"></pre></div>
+<div class="card"><b>Recent jobs</b><table id="jobs"><tr><th>id</th><th>status</th><th>budget</th><th>provider agent</th><th>description</th></tr></table></div>
+<p class="muted">Read-only page. It talks straight to <code>https://rpc.mainnet.arc.io</code>. Source: <a href="https://github.com/northstar-trustrail/paidrep">github.com/northstar-trustrail/paidrep</a>.</p>
+<script type="module">
+import { createPublicClient, http, parseAbi, formatUnits } from "https://esm.sh/viem@2";
+import { arc } from "https://esm.sh/viem@2/chains";
+const D = await (await fetch("./deployment.json")).json();
+const pub = createPublicClient({ chain: arc, transport: http("https://rpc.mainnet.arc.io") });
+const X = "https://explorer.arc.io/address/";
+const escrowAbi = parseAbi(["function jobCounter() view returns (uint256)",
+ "function getJob(uint256) view returns ((address client,uint8 status,address provider,uint48 expiredAt,address evaluator,uint48 submittedAt,uint256 budget,address hook,address paymentToken,uint256 providerAgentId,string description,uint256 settledAmount,address payoutReceiver))"]);
+const repAbi = parseAbi(["function getSummary(uint256,address[],string,string) view returns (uint64,int128,uint8)"]);
+const S = ["Open","Funded","Submitted","Completed","Rejected","Expired"];
+document.getElementById("dep").innerHTML = `Escrow (ERC-8183 proxy): <a href="${X}${D.escrow}">${D.escrow}</a><br>
+Hook (PaidReputationHook): <a href="${X}${D.hook}">${D.hook}</a><br>
+ERC-8004 IdentityRegistry: <a href="${X}${D.identityRegistry}">${D.identityRegistry}</a><br>
+ERC-8004 ReputationRegistry: <a href="${X}${D.reputationRegistry}">${D.reputationRegistry}</a><br>Payment token: USDC <code>${D.usdc}</code>`;
+document.getElementById("aid").value = D.demoAgentId || "";
+window.rep = async () => {
+  const id = BigInt(document.getElementById("aid").value);
+  const q = (t) => pub.readContract({ address: D.reputationRegistry, abi: repAbi, functionName: "getSummary", args: [id, [D.hook], "erc8183", t] });
+  const [[c], [pc, pavg, pd], [r]] = await Promise.all([q("completed"), q("paid"), q("rejected")]);
+  document.getElementById("repout").textContent =
+    `completed jobs: ${c}\nrejected after submit: ${r}\nsuccess rate: ${c + r > 0n ? (Number(c) * 100 / Number(c + r)).toFixed(0) + "%" : "n/a"}\nUSDC paid through escrow: ${formatUnits(pc * pavg, pd || 6)}`;
+};
+const n = Number(await pub.readContract({ address: D.escrow, abi: escrowAbi, functionName: "jobCounter" }));
+const tb = document.getElementById("jobs");
+for (let i = n; i >= Math.max(1, n - 19); i--) {
+  const j = await pub.readContract({ address: D.escrow, abi: escrowAbi, functionName: "getJob", args: [BigInt(i)] });
+  tb.insertAdjacentHTML("beforeend", `<tr><td>${i}</td><td>${S[j.status]}</td><td>${formatUnits(j.budget, 6)} USDC</td><td>${j.providerAgentId}</td><td>${j.description.replace(/</g, "&lt;")}</td></tr>`);
+}
+if (D.demoAgentId) rep();
+</script></body></html>
