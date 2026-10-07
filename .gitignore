@@ -1,0 +1,26 @@
+# build artifacts
+out/
+cache/
+broadcast/
+cli/node_modules/
+node_modules/
+
+# secrets: never commit
+.env
+.env.*
+*.key
+*.pem
+*wallet*.json
+!docs/deployment.json
+keystore/
+secrets/
+
+# local submission notes (not part of the project)
+SUBMISSION_DRAFT.md
+submission/
+
+# OS/editor
+.DS_Store
+*.swp
+.vscode/
+.idea/

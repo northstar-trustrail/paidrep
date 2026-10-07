@@ -1,0 +1,17 @@
+{
+  "name": "paidrep-cli",
+  "version": "1.0.0",
+  "description": "CLI for PaidRep: ERC-8183 escrow + ERC-8004 paid-only reputation on Arc mainnet",
+  "main": "paidrep.mjs",
+  "scripts": {
+    "info": "node paidrep.mjs info"
+  },
+  "keywords": [],
+  "author": "shipwright-earn",
+  "license": "MIT",
+  "dependencies": {
+    "viem": "^2.57.3"
+  },
+  "type": "module",
+  "private": true
+}
